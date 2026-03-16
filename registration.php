@@ -14,6 +14,7 @@
         $email        = isset($data['email'])        ? trim($data['email'])        : '';
 
         if (empty($firstname) || empty($lastname) || empty($contact) || empty($school_idnum) || empty($email)) {
+            http_response_code(400);
             echo json_encode(array('status' => 'error', 'message' => 'All fields are required.', 'data' => null));
             exit();
         }
@@ -24,11 +25,14 @@
             );
             $stmt->bind_param('sssss', $firstname, $lastname, $contact, $school_idnum, $email);
             $stmt->execute();
+            
+            $student_id = $connection->insert_id;
 
             $response = array(
                 'status'  => 'success',
                 'message' => 'Student registered successfully.',
                 'data'    => array(
+                    'id'           => $student_id,
                     'firstname'    => $firstname,
                     'lastname'     => $lastname,
                     'contact'      => $contact,
@@ -40,8 +44,10 @@
             $errorCode = $e->getCode();
             if ($errorCode === 1062) {
                 // Duplicate entry for unique key (school_idnum or email)
+                http_response_code(409);
                 $message = 'A student with that School ID or Email already exists.';
             } else {
+                http_response_code(500);
                 $message = 'Failed to register student. ' . $e->getMessage();
             }
             $response = array(
