@@ -5,13 +5,19 @@
 
     if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-        $data = json_decode(file_get_contents("php://input"), true);
+        $rawInput = file_get_contents("php://input");
+        $jsonData = json_decode($rawInput, true);
+        $data = is_array($jsonData) ? $jsonData : $_POST;
 
-        $firstname    = isset($data['firstname'])    ? trim($data['firstname'])    : '';
-        $lastname     = isset($data['lastname'])     ? trim($data['lastname'])     : '';
-        $contact      = isset($data['contact'])      ? trim($data['contact'])      : '';
-        $school_idnum = isset($data['school_idnum']) ? trim($data['school_idnum']) : '';
-        $email        = isset($data['email'])        ? trim($data['email'])        : '';
+        if (isset($data['data']) && is_array($data['data'])) {
+            $data = $data['data'];
+        }
+
+        $firstname    = isset($data['firstname']) ? trim($data['firstname']) : (isset($data['first_name']) ? trim($data['first_name']) : '');
+        $lastname     = isset($data['lastname']) ? trim($data['lastname']) : (isset($data['last_name']) ? trim($data['last_name']) : '');
+        $contact      = isset($data['contact']) ? trim($data['contact']) : (isset($data['phone']) ? trim($data['phone']) : '');
+        $school_idnum = isset($data['school_idnum']) ? trim($data['school_idnum']) : (isset($data['schoolIdNum']) ? trim($data['schoolIdNum']) : (isset($data['school_id']) ? trim($data['school_id']) : ''));
+        $email        = isset($data['email']) ? trim($data['email']) : '';
 
         if (empty($firstname) || empty($lastname) || empty($contact) || empty($school_idnum) || empty($email)) {
             echo json_encode(array('status' => 'error', 'message' => 'All fields are required.', 'data' => null));
@@ -54,6 +60,8 @@
         echo json_encode($response);
 
 
-    } 
+    } else {
+        echo json_encode(array('status' => 'error', 'message' => 'Invalid request method. Only POST is allowed.', 'data' => null));
+    }
 
 ?>
