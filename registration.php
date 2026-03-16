@@ -19,11 +19,11 @@
         }
 
         try {
-            $stmt = mysqli_prepare($connection,
+            $stmt = $connection->prepare(
                 "INSERT INTO users (firstname, lastname, contact, school_idnum, email) VALUES (?, ?, ?, ?, ?)"
             );
-            mysqli_stmt_bind_param($stmt, 'sssss', $firstname, $lastname, $contact, $school_idnum, $email);
-            mysqli_stmt_execute($stmt);
+            $stmt->bind_param('sssss', $firstname, $lastname, $contact, $school_idnum, $email);
+            $stmt->execute();
 
             $response = array(
                 'status'  => 'success',

@@ -22,14 +22,14 @@ if ($id <= 0 || empty($firstname) || empty($lastname) || empty($contact) || empt
     exit();
 }
 
-$stmt = mysqli_prepare($connection,
+$stmt = $connection->prepare(
     "UPDATE users SET firstname=?, lastname=?, contact=?, school_idnum=?, email=? WHERE id=?"
 );
-mysqli_stmt_bind_param($stmt, 'sssssi', $firstname, $lastname, $contact, $school_idnum, $email, $id);
-$result = mysqli_stmt_execute($stmt);
+$stmt->bind_param('sssssi', $firstname, $lastname, $contact, $school_idnum, $email, $id);
+$result = $stmt->execute();
 
 if ($result) {
     echo json_encode(['status' => 'success', 'message' => 'Student updated successfully.']);
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Failed to update student. ' . mysqli_error($connection)]);
+    echo json_encode(['status' => 'error', 'message' => 'Failed to update student. ' . $connection->error]);
 }

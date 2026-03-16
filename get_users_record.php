@@ -8,13 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit();
 } else {
     $sql = "SELECT * FROM users";
-    $result = mysqli_query($connection, $sql);
-    if (mysqli_num_rows($result) > 0) {
+    $result = $connection->query($sql);
+    if ($result->num_rows > 0) {
         $users = array();
-       
-        // while($row = mysqli_fetch_assoc($result)) {
-        //     $users[] = $row;
-        // }
+
         foreach ($result as $row) {
             $users[] = $row;
         }

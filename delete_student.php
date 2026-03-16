@@ -17,11 +17,11 @@ if ($id <= 0) {
     exit();
 }
 
-$stmt = mysqli_prepare($connection, "DELETE FROM users WHERE id=?");
-mysqli_stmt_bind_param($stmt, 'i', $id);
-$result = mysqli_stmt_execute($stmt);
+$stmt = $connection->prepare("DELETE FROM users WHERE id=?");
+$stmt->bind_param('i', $id);
+$result = $stmt->execute();
 
-if ($result && mysqli_stmt_affected_rows($stmt) > 0) {
+if ($result && $stmt->affected_rows > 0) {
     echo json_encode(['status' => 'success', 'message' => 'Student deleted successfully.']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Failed to delete student or student not found.']);
