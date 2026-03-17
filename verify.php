@@ -2,25 +2,35 @@
 
 declare(strict_types=1);
 
+// Set CORS headers first, before anything else
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Max-Age: 3600');
+
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+  http_response_code(200);
+  exit('');
+}
+
 require_once __DIR__ . '/db_connection.php';
 require_once __DIR__ . '/api_response.php';
 require_once __DIR__ . '/jwt.php';
-
-set_api_headers();
-handle_preflight();
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
   send_error('Method not allowed.', null, 405);
 }
 
 try {
-// Get the authorization header
+  // Get the authorization header
   $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-  
+
   if (empty($authHeader)) {
     $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
   }
-  
+
   if (empty($authHeader) || !preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
     send_error('Authorization header missing or invalid.', null, 401);
   }
@@ -29,7 +39,7 @@ try {
 
   // Verify the token
   $decoded = jwt_decode($token, get_jwt_secret());
-  
+
   if (!$decoded) {
     send_error('Invalid or expired token.', null, 401);
   }

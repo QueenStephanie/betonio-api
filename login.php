@@ -2,20 +2,32 @@
 
 declare(strict_types=1);
 
+// Set CORS headers first, before anything else
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Max-Age: 3600');
+
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+  http_response_code(200);
+  exit('');
+}
+
 require_once __DIR__ . '/db_connection.php';
 require_once __DIR__ . '/api_response.php';
 require_once __DIR__ . '/jwt.php';
-
-set_api_headers();
-handle_preflight();
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
   send_error('Method not allowed.', null, 405);
 }
 
 $input = read_json_input();
+error_log("DEBUG LOGIN: input=" . json_encode($input));
 $email = trim((string) ($input['email'] ?? ''));
 $password = trim((string) ($input['password'] ?? ''));
+error_log("DEBUG LOGIN: email=$email, password=$password");
 
 $errors = [];
 if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
