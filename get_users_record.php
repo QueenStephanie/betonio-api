@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit();
 } else {
     try {
-        $stmt = $connection->prepare("SELECT id, firstname, lastname, contact, school_idnum, email, created_at FROM users");
+        $stmt = $connection->prepare("SELECT id, firstname, lastname, contact, school_id_number, email, created_at FROM users");
         $stmt->execute();
         $result = $stmt->get_result();
 

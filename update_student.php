@@ -15,11 +15,11 @@ $id           = isset($data['id'])           ? intval($data['id'])             :
 $firstname    = isset($data['firstname'])    ? trim($data['firstname'])        : '';
 $lastname     = isset($data['lastname'])     ? trim($data['lastname'])         : '';
 $contact      = isset($data['contact'])      ? trim($data['contact'])          : '';
-$school_idnum = isset($data['school_idnum']) ? trim($data['school_idnum'])     : '';
+$school_id_number = isset($data['school_id_number']) ? trim($data['school_id_number'])     : '';
 $email        = isset($data['email'])        ? trim($data['email'])            : '';
 
-if ($id <= 0 || empty($firstname) || empty($lastname) || empty($contact) || empty($school_idnum) || empty($email)) {
-    http_response_code(400);
+if ($id <= 0 || empty($firstname) || empty($lastname) || empty($contact) || empty($school_id_number) || empty($email)) {
+    http_response_code(422);
     echo json_encode(['status' => 'error', 'message' => 'All fields are required.']);
     exit();
 }
@@ -44,9 +44,9 @@ try {
 
 try {
     $stmt = $connection->prepare(
-        "UPDATE users SET firstname=?, lastname=?, contact=?, school_idnum=?, email=? WHERE id=?"
+        "UPDATE users SET firstname=?, lastname=?, contact=?, school_id_number=?, email=? WHERE id=?"
     );
-    $stmt->bind_param('sssssi', $firstname, $lastname, $contact, $school_idnum, $email, $id);
+    $stmt->bind_param('sssssi', $firstname, $lastname, $contact, $school_id_number, $email, $id);
     $result = $stmt->execute();
     
     if ($result) {

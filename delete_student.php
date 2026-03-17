@@ -9,12 +9,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+$data = $_POST;
 
-$id = isset($data['id']) ? intval($data['id']) : 0;
+if (isset($data['id'])) {
+    $id = intval($data['id']);
+} else {
+    $rawInput = file_get_contents("php://input");
+    $json_data = json_decode($rawInput, true);
+    $id = isset($json_data['id']) ? intval($json_data['id']) : 0;
+}
 
 if ($id <= 0) {
-    http_response_code(400);
+    http_response_code(422);
     echo json_encode(['status' => 'error', 'message' => 'Invalid student ID.']);
     exit();
 }

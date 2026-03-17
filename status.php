@@ -45,15 +45,10 @@ if (file_exists(__DIR__ . '/api_response.php')) {
     echo "<div class='error'>✗ api_response.php not found</div>";
 }
 
-// Check 3: JWT Helper
+// Check 3: JWT Helper (currently unused while authentication is disabled)
 echo "<div class='test info'>";
 echo "<h2>3. JWT Helper</h2>";
-if (file_exists(__DIR__ . '/jwt.php')) {
-    require_once __DIR__ . '/jwt.php';
-    echo "<div class='success'>✓ jwt.php loaded</div>";
-} else {
-    echo "<div class='error'>✗ jwt.php not found</div>";
-}
+echo "<div class='info'>Authentication is disabled; JWT helper is currently unused.</div>";
 
 // Check 4: Test Users Table
 echo "<div class='test info'>";
@@ -73,44 +68,29 @@ echo "<div class='test info'>";
 echo "<h2>5. API Endpoints Available</h2>";
 
 $endpoints = [
-    'login.php' => 'POST - User login',
-    'logout.php' => 'POST - User logout',
-    'verify.php' => 'GET - Verify token',
-    'register_user.php' => 'POST - Register user'
+    'register_user.php' => 'POST - Register user',
+    'get_users_record.php' => 'GET - List students',
+    'update_student.php' => 'POST - Update student',
+    'delete_student.php' => 'POST - Delete student',
+    'health.php' => 'GET - Health check'
 ];
 
 foreach ($endpoints as $file => $desc) {
     $exists = file_exists(__DIR__ . '/' . $file);
     $class = $exists ? 'success' : 'error';
     $icon = $exists ? '✓' : '✗';
-    echo \"<div class='$class'>\n  $icon <code>$file</code> - $desc\n</div>\n\";
+    echo "<div class='$class'>\n  $icon <code>$file</code> - $desc\n</div>\n";
 }
 
 // Check 6: CORS Headers
-echo \"<div class='test info'>
+echo "<div class='test info'>
 <h2>6. CORS Configuration</h2>
 <p>Check if CORS headers are being sent correctly:</p>
 <button onclick='testCORS()'>Test CORS</button>
 <pre id='corsResult' style='background: white; padding: 10px; border-radius: 3px; display: none;'></pre>
-</div>\";
+</div>";
 
-// Check 7: Test Login Endpoint
-echo \"<div class='test info'>
-<h2>7. Test Login Endpoint</h2>
-<button onclick='testLogin()'>Test Login</button>
-<pre id='loginResult' style='background: white; padding: 10px; border-radius: 3px; display: none;'></pre>
-</div>\";
-
-// Check 8: Test Verify Endpoint
-echo \"<div class='test info'>
-<h2>8. Test Verify Endpoint</h2>
-<p>Note: You need a valid token first</p>
-<input type='text' id='tokenInput' placeholder='Paste JWT token here' style='width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 3px;'>
-<button onclick='testVerify()'>Test Verify</button>
-<pre id='verifyResult' style='background: white; padding: 10px; border-radius: 3px; display: none;'></pre>
-</div>\";
-
-echo \"
+echo "
     </div>
 
     <script>
@@ -133,61 +113,6 @@ echo \"
                 }
             });
             result.innerHTML = output || 'CORS headers present but minimal details';
-        })
-        .catch(err => {
-            result.innerHTML = 'Error: ' + err.message;
-        });
-    }
-
-    function testLogin() {
-        const result = document.getElementById('loginResult');
-        result.style.display = 'block';
-        result.innerHTML = 'Testing login endpoint...';
-
-        fetch('http://localhost/betonio-api/login.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: 'test@school.edu',
-                password: 'password123'
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            result.innerHTML = JSON.stringify(data, null, 2);
-            if (data.data && data.data.token) {
-                result.innerHTML += '\\n\\n✓ Login successful! Token received.';
-                document.getElementById('tokenInput').value = data.data.token;
-            }
-        })
-        .catch(err => {
-            result.innerHTML = 'Error: ' + err.message;
-        });
-    }
-
-    function testVerify() {
-        const token = document.getElementById('tokenInput').value;
-        if (!token) {
-            alert('Please paste a token first');
-            return;
-        }
-
-        const result = document.getElementById('verifyResult');
-        result.style.display = 'block';
-        result.innerHTML = 'Verifying token...';
-
-        fetch('http://localhost/betonio-api/verify.php', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            result.innerHTML = JSON.stringify(data, null, 2);
         })
         .catch(err => {
             result.innerHTML = 'Error: ' + err.message;
