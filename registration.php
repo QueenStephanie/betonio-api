@@ -16,20 +16,27 @@
         $firstname    = isset($data['firstname']) ? trim($data['firstname']) : (isset($data['first_name']) ? trim($data['first_name']) : '');
         $lastname     = isset($data['lastname']) ? trim($data['lastname']) : (isset($data['last_name']) ? trim($data['last_name']) : '');
         $contact      = isset($data['contact']) ? trim($data['contact']) : (isset($data['phone']) ? trim($data['phone']) : '');
-        $school_id_number = isset($data['school_id_number']) ? trim($data['school_id_number']) : (isset($data['schoolIdNumber']) ? trim($data['schoolIdNumber']) : (isset($data['school_id']) ? trim($data['school_id']) : ''));
+        $school_idnum = isset($data['school_idnum'])
+            ? trim($data['school_idnum'])
+            : (isset($data['school_id_number'])
+                ? trim($data['school_id_number'])
+                : (isset($data['schoolIdNumber'])
+                    ? trim($data['schoolIdNumber'])
+                    : (isset($data['school_id']) ? trim($data['school_id']) : '')));
         $email        = isset($data['email']) ? trim($data['email']) : '';
 
-        if (empty($firstname) || empty($lastname) || empty($contact) || empty($school_id_number) || empty($email)) {
+        if (empty($firstname) || empty($lastname) || empty($contact) || empty($school_idnum) || empty($email)) {
             http_response_code(422);
             echo json_encode(array('status' => 'error', 'message' => 'All fields are required.', 'data' => null));
             exit();
         }
 
         try {
+            $dummyPassword = password_hash(bin2hex(random_bytes(8)), PASSWORD_BCRYPT);
             $stmt = $connection->prepare(
-                "INSERT INTO users (firstname, lastname, contact, school_id_number, email) VALUES (?, ?, ?, ?, ?)"
+                "INSERT INTO users (firstname, lastname, contact, school_idnum, email, password) VALUES (?, ?, ?, ?, ?, ?)"
             );
-            $stmt->bind_param('sssss', $firstname, $lastname, $contact, $school_id_number, $email);
+            $stmt->bind_param('ssssss', $firstname, $lastname, $contact, $school_idnum, $email, $dummyPassword);
             $stmt->execute();
             
             $student_id = $connection->insert_id;
@@ -38,12 +45,12 @@
                 'status'  => 'success',
                 'message' => 'Student registered successfully.',
                 'data'    => array(
-                    'id'           => $student_id,
-                    'firstname'    => $firstname,
-                    'lastname'     => $lastname,
-                    'contact'      => $contact,
-                    'school_idnum' => $school_idnum,
-                    'email'        => $email
+                    'id'               => $student_id,
+                    'firstname'        => $firstname,
+                    'lastname'         => $lastname,
+                    'contact'          => $contact,
+                    'school_idnum'     => $school_idnum,
+                    'email'            => $email
                 )
             );
         } catch (mysqli_sql_exception $e) {

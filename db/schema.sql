@@ -7,32 +7,31 @@ CREATE DATABASE IF NOT EXISTS ipt_db;
 USE ipt_db;
 
 -- ===================================
--- Users Table
+-- Users Table (matches backend/API expectations)
 -- ===================================
-CREATE TABLE IF NOT EXISTS users (
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     firstname VARCHAR(100) NOT NULL,
-    lastname VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    contact VARCHAR(20),
-    school_idnum VARCHAR(50) UNIQUE,
-    role ENUM('student', 'teacher', 'admin') DEFAULT 'student',
-    status ENUM('active', 'inactive', 'suspended') DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_email (email),
-    INDEX idx_school_idnum (school_idnum),
-    INDEX idx_status (status),
-    INDEX idx_created_at (created_at DESC)
+    lastname  VARCHAR(100) NOT NULL,
+    contact   VARCHAR(20)  NOT NULL,
+    school_idnum VARCHAR(50) NOT NULL,
+    email     VARCHAR(255) NOT NULL,
+    password  VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT uq_users_email UNIQUE (email),
+    CONSTRAINT uq_users_school_idnum UNIQUE (school_idnum),
+    INDEX idx_users_created_at (created_at DESC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ===================================
--- Audit Log Table (optional, for tracking changes)
+-- Audit Log Table (optional)
 -- ===================================
-CREATE TABLE IF NOT EXISTS audit_logs (
+DROP TABLE IF EXISTS audit_logs;
+CREATE TABLE audit_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+    user_id INT NULL,
     action VARCHAR(100) NOT NULL,
     table_name VARCHAR(50),
     record_id INT,
@@ -46,16 +45,17 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ===================================
--- JWT/Session Tokens Table (optional, for token management)
+-- Tokens Table (optional)
 -- ===================================
-CREATE TABLE IF NOT EXISTS tokens (
+DROP TABLE IF EXISTS tokens;
+CREATE TABLE tokens (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     token_hash VARCHAR(255) NOT NULL UNIQUE,
     expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     revoked_at TIMESTAMP NULL,
-    INDEX idx_user_id (user_id),
-    INDEX idx_expires_at (expires_at),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    INDEX idx_tokens_user_id (user_id),
+    INDEX idx_tokens_expires_at (expires_at),
+    CONSTRAINT fk_tokens_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
