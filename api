@@ -3,50 +3,8 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../lib/api_response.php';
-require_once __DIR__ . '/../lib/db_connection.php';
-require_once __DIR__ . '/../lib/db_query.php';
-require_once __DIR__ . '/../lib/jwt.php';
 
 set_api_headers();
 handle_preflight();
 
-if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
-  send_error('Method not allowed.', null, 405);
-}
-
-try {
-  // Get the authorization header
-  $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-
-  if (empty($authHeader) || !preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
-    send_error('Authorization header missing or invalid.', null, 401);
-  }
-
-  $token = $matches[1];
-
-  // Verify the token
-  $decoded = jwt_decode($token, get_jwt_secret());
-
-  if (!$decoded) {
-    send_error('Invalid or expired token.', null, 401);
-  }
-
-  // Get fresh user data from database
-  $connection = db_connect();
-  $stmt = db_execute(
-    $connection,
-    'SELECT id, email, firstname, lastname FROM users WHERE id = ?',
-    [(int) $decoded['id']]
-  );
-
-  $result = $stmt->get_result();
-  $user = $result ? $result->fetch_assoc() : null;
-
-  if (!$user) {
-    send_error('User not found.', null, 401);
-  }
-
-  send_success('Token is valid.', $user);
-} catch (Throwable $exception) {
-  send_error('Token verification failed.', ['detail' => $exception->getMessage()], 500);
-}
+send_error('Authentication is disabled for this application.', null, 410);
