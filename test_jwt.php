@@ -30,8 +30,8 @@ echo "<div class='test success'>";
 echo "<h2>Test 1: Creating Token</h2>";
 
 $testPayload = [
-    'id' => 1,
-    'email' => 'test@school.edu'
+  'id' => 1,
+  'email' => 'test@school.edu'
 ];
 
 $token = jwt_encode($testPayload, $secret);
@@ -48,9 +48,9 @@ echo "<p><strong>Decoded Payload:</strong></p>";
 echo "<code>" . json_encode($decoded, JSON_PRETTY_PRINT) . "</code>";
 
 if ($decoded && $decoded['id'] === 1 && $decoded['email'] === 'test@school.edu') {
-    echo "<p style='color: green;'><strong>✓ Token encode/decode working correctly!</strong></p>";
+  echo "<p style='color: green;'><strong>✓ Token encode/decode working correctly!</strong></p>";
 } else {
-    echo "<p style='color: red;'><strong>✗ Token decode failed!</strong></p>";
+  echo "<p style='color: red;'><strong>✗ Token decode failed!</strong></p>";
 }
 echo "</div>";
 
@@ -73,4 +73,3 @@ echo "</div>";
 
 echo "</body>
 </html>";
-?>

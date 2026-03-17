@@ -14,7 +14,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
 }
 
 try {
-  // Get the authorization header - try different methods
+// Get the authorization header
   $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
   
   if (empty($authHeader)) {
@@ -22,23 +22,16 @@ try {
   }
   
   if (empty($authHeader) || !preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
-    send_error('Authorization header missing or invalid.', [
-      'headers_received' => array_keys($_SERVER),
-      'auth_header_value' => substr($authHeader, 0, 50)
-    ], 401);
+    send_error('Authorization header missing or invalid.', null, 401);
   }
 
   $token = $matches[1];
 
   // Verify the token
-  $secret = get_jwt_secret();
-  $decoded = jwt_decode($token, $secret);
+  $decoded = jwt_decode($token, get_jwt_secret());
   
   if (!$decoded) {
-    send_error('Invalid or expired token.', [
-      'token_sample' => substr($token, 0, 30) . '...',
-      'jwt_secret' => $secret
-    ], 401);
+    send_error('Invalid or expired token.', null, 401);
   }
 
   // Get fresh user data from database
@@ -64,4 +57,3 @@ try {
 } catch (Throwable $exception) {
   send_error('Token verification failed.', ['detail' => $exception->getMessage()], 500);
 }
-

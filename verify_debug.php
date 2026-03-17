@@ -16,7 +16,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
 try {
   // Get the authorization header
   $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-  
+
   error_log('verify_debug.php: Auth header: ' . $authHeader);
 
   if (empty($authHeader)) {
@@ -36,7 +36,7 @@ try {
 
   // Verify the token
   $decoded = jwt_decode($token, $secret);
-  
+
   error_log('verify_debug.php: Decoded payload: ' . json_encode($decoded));
 
   if (!$decoded) {
