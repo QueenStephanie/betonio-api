@@ -30,8 +30,8 @@ $password = trim((string) ($input['password'] ?? ''));
 error_log("DEBUG LOGIN: email=$email, password=$password");
 
 $errors = [];
-if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-  $errors['email'] = 'Valid email is required.';
+if ($email === '') {
+  $errors['email'] = 'Email is required.';
 }
 if ($password === '') {
   $errors['password'] = 'Password is required.';

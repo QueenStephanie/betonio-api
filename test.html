@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,11 +12,13 @@
       margin: 50px auto;
       padding: 20px;
     }
+
     button {
       padding: 10px 20px;
       margin: 5px;
       cursor: pointer;
     }
+
     pre {
       background: #f4f4f4;
       padding: 10px;
@@ -24,6 +27,7 @@
     }
   </style>
 </head>
+
 <body>
   <h1>API Method Test</h1>
   <button onclick="testMethod()">Test Method Detection</button>
@@ -40,7 +44,7 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({test: 'data'})
+          body: JSON.stringify({ test: 'data' })
         });
         console.log('Response status:', response.status);
         const data = await response.json();
@@ -75,4 +79,5 @@
     }
   </script>
 </body>
+
 </html>

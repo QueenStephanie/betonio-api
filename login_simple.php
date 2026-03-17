@@ -51,4 +51,3 @@ if ($email === 'test@school.edu' && $password === 'password123') {
     'received' => ['email' => $email, 'password' => strlen($password) . ' chars']
   ]);
 }
-?>
